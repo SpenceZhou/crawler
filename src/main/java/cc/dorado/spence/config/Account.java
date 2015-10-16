@@ -15,13 +15,13 @@ import cc.dorado.spence.util.SpiderLog;
 import com.google.common.collect.Maps;
 
 /**
- * Project:spence
+ * Project:crawler
  * FileName:Account.java
  * PackageName:cc.dorado.spence.config
- * Date:2015年7月7日
+ * Date:2015年10月16日
  * Copyright (C) 2015, zsp@dorado.cc All rights reserved.
  *
- * ClassName:Account<br>
+ * ClassName:Account
  * Function:模拟登录用户
  * 
  * @auhter Spence
@@ -32,14 +32,14 @@ public class Account {
 	/**
 	 * accountPath:account路径
 	 */
-	public static final String accountPath = "src/main/java/account";
+	public static final String SINAWEIBO_PATH = "src/main/java/sinaweibo";
 	/**
 	 * sinaWeibo:新浪微博用户
 	 */
 	public static Map<String, String> sinaWeibo = new HashMap<String, String>();
 	
 	static{
-		sinaWeibo = readAccount(accountPath);
+		sinaWeibo = readAccount(SINAWEIBO_PATH);
 	}
 
 	/**

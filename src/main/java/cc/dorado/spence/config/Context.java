@@ -1,24 +1,29 @@
 package cc.dorado.spence.config;
 
 /**
- * Project:spence
- * FileName:PathConfig.java
+ * Project:crawler
+ * FileName:Context.java
  * PackageName:cc.dorado.spence.config
- * Date:2015年6月27日
+ * Date:2015年10月16日
  * Copyright (C) 2015, zsp@dorado.cc All rights reserved.
  *
- * ClassName:PathConfig<br>
- * Function:爬虫系统相关的地址配置文件
+ * ClassName:Context
+ * Function:配置文件
  * 
  * @auhter Spence
  * @version 1.0
  * @since JDK 1.7
  */
-public class PathConfig {
-	
+public class Context {
+
 	/**
 	 * SAVETHMLPATH:保存抓取html文件的地址
 	 */
 	public static final String SAVETHMLPATH = "../html/";
-
+	
+	/**
+	 * DATABASE:数据库名
+	 */
+	public static final String DATABASE = "crawler";
+	
 }

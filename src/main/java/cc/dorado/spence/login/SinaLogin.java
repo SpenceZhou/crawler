@@ -29,22 +29,20 @@ import cc.dorado.spence.util.SpiderLog;
 
 import com.jayway.jsonpath.JsonPath;
 
-
 /**
- * Project:spence
- * FileName:PathConfig.java
- * PackageName:cc.dorado.spence.config
- * Date:2015年6月27日
+ * Project:crawler
+ * FileName:SinaLogin.java
+ * PackageName:cc.dorado.spence.login
+ * Date:2015年10月16日
  * Copyright (C) 2015, zsp@dorado.cc All rights reserved.
  *
- * ClassName:PathConfig<br>
+ * ClassName:SinaLogin
  * Function:模拟新浪微博登陆，暂未加验证码部分
  * 
  * @auhter Spence
  * @version 1.0
  * @since JDK 1.7
  */
-
 public class SinaLogin {	
 	/**
 	 * getPerLogin:预登陆获取rsakey

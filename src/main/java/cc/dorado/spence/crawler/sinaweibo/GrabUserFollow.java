@@ -10,13 +10,13 @@ import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
 
 /**
- * Project:spence
+ * Project:crawler
  * FileName:GrabUserFollow.java
  * PackageName:cc.dorado.spence.crawler.sinaweibo
- * Date:2015年7月11日
+ * Date:2015年10月16日
  * Copyright (C) 2015, zsp@dorado.cc All rights reserved.
  *
- * ClassName:GrabUserFollow<br>
+ * ClassName:GrabUserFollow
  * Function:抓取用户的关注列表和粉丝列表（粉丝和关注由于系统设置只能抓取100条5页*20条）
  * 
  * @auhter Spence

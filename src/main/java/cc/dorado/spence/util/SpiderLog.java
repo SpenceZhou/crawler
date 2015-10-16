@@ -5,12 +5,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * ClassName:SpiderLog<br>
+ * ClassName:SpiderLog
  * Function:系统log日志
  * 
  * @auhter Spence
  * @version 1.0
- * @since JDK 1.6
+ * @since JDK 1.7
  */
 public class SpiderLog {
 	

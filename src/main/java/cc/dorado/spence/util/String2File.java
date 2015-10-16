@@ -8,7 +8,7 @@ import org.apache.commons.io.FileUtils;
 
 /**
  * ClassName:String2File<br>
- * Function:TODO ADD FUNCTION<br>
+ * Function:将字符串写入文件
  * 
  * @auhter Spence
  * @version 1.0

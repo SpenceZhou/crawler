@@ -15,13 +15,13 @@ import cc.dorado.spence.config.VerifyCookies;
 import cc.dorado.spence.util.SpiderLog;
 
 /**
- * Project:spence
+ * Project:crawler
  * FileName:GrabUserRegTime.java
  * PackageName:cc.dorado.spence.crawler.sinaweibo
- * Date:2015年7月11日
+ * Date:2015年10月16日
  * Copyright (C) 2015, zsp@dorado.cc All rights reserved.
  *
- * ClassName:GrabUserRegTime<br>
+ * ClassName:GrabUserRegTime
  * Function:抓取用户的注册时间
  * 
  * @auhter Spence

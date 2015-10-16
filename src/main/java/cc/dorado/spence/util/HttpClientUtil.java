@@ -15,14 +15,14 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 /**
- * Project:spence
+ * Project:crawler
  * FileName:HttpClientUtil.java
  * PackageName:cc.dorado.spence.util
- * Date:2015年7月6日
+ * Date:2015年10月16日
  * Copyright (C) 2015, zsp@dorado.cc All rights reserved.
  *
- * ClassName:HttpClientUtil<br>
- * Function:TODO ADD FUNCTION<br>
+ * ClassName:HttpClientUtil
+ * Function:
  * 
  * @auhter Spence
  * @version 1.0

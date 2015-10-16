@@ -11,16 +11,14 @@ import cc.dorado.spence.util.SpiderLog;
 
 import com.google.common.collect.HashMultimap;
 
-
-
 /**
- * Project:spence
+ * Project:crawler
  * FileName:VerifyCookies.java
  * PackageName:cc.dorado.spence.config
- * Date:2015年7月8日
+ * Date:2015年10月16日
  * Copyright (C) 2015, zsp@dorado.cc All rights reserved.
  *
- * ClassName:VerifyCookies<br>
+ * ClassName:VerifyCookies
  * Function:登录用户验证身份后的cookies
  * 
  * @auhter Spence
@@ -39,7 +37,7 @@ public class VerifyCookies {
 	}
 
 	/**
-	 * getSinaWeiboCookies:获取sian微博的登录cookies
+	 * getSinaWeiboCookies:获取sina微博的登录cookies
 	 * @return
 	 * @return Set<Cookie>
 	 */
@@ -48,7 +46,7 @@ public class VerifyCookies {
 		if (sinaAccount == null) {
 			SpiderLog
 					.log(VerifyCookies.class)
-					.info("新浪微博用于登录的账号为空，请将账号和密码写于cc.dorado.spence.config.Account类中！");
+					.info("新浪微博用于登录的账号为空，请将账号和密码写于account文件中！");
 			return null;
 		}
 		for(String key : sinaAccount.keySet()){
@@ -70,7 +68,7 @@ public class VerifyCookies {
 		if (sinaAccount == null) {
 			SpiderLog
 					.log(VerifyCookies.class)
-					.info("新浪微博用于登录的账号为空，请将账号和密码写于cc.dorado.spence.config.Account类中！");
+					.info("新浪微博用于登录的账号为空，请将账号和密码写于account文件中！");
 		} else {
 			for (String key : sinaAccount.keySet()) {
 				if (!sinaWeibo.containsKey(key)) {
