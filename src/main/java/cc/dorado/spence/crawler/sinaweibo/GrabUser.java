@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
-import org.junit.Test;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
@@ -165,13 +164,5 @@ public class GrabUser implements PageProcessor{
 		String id = grabUser.getLastId();
 		Spider.create(new GrabUser()).addUrl("http://weibo.com/"+id).addPipeline(new SinaWeiboUserPipeline()).setScheduler(new RedisScheduler(Context.JEDIS_POOL)).thread(4).run();
 	}
-	
-	@Test
-	public void testDB(){
-		String id = getLastId();
-		
-		System.out.println(id);
-		
-		System.out.println(hasGrab(Long.parseLong(id)));
-	}
+
 }
