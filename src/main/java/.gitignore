@@ -1,4 +1,3 @@
-/account
 /sinaweibo
-/redis
-/redis.properites
+/mongodb.properties
+/redis.properties

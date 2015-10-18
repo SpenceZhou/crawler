@@ -25,7 +25,7 @@ public class Redis {
 	/**
 	 * redis，host，port，password配置
 	 */
-	public static final String REDIS_PATH = "/redis.properites";
+	public static final String REDIS_PATH = "/redis.properties";
 	
 	public static String host;
 	
