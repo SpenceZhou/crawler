@@ -30,4 +30,5 @@ public class SinaWeiboUser{
 	public List<Long> followers;//粉丝id列表
 	public Integer weiboCount;//微博数量
 	public List<Long> weibo;//微博的messageId列表
+
 }

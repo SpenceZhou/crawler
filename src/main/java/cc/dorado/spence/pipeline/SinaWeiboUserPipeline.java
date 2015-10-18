@@ -36,18 +36,9 @@ import com.mongodb.DBObject;
 public class SinaWeiboUserPipeline implements Pipeline{
 	
 	public static final String TABLE = "sw_user";
-
-	public static final long PAUSE = 1000;
 	
 	@Override
 	public void process(ResultItems resultItems, Task task) {
-		try {
-			SpiderLog.log(getClass()).info("暂停"+PAUSE/1000+"秒。");
-			Thread.sleep(PAUSE);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-		SpiderLog.log(getClass()).info("暂停"+PAUSE/1000+"秒结束，继续运行。");
 		SinaWeiboUser user = resultItems.get("user");
 		if(user!=null&&StringUtils.isNotEmpty(user.nick)){
 			MongodbPlugin mongodbPlugin = new MongodbPlugin(Context.DATABASE);
@@ -63,8 +54,6 @@ public class SinaWeiboUserPipeline implements Pipeline{
 					e.printStackTrace();
 				}
 			}
-			
-
 			DBObject object = MongoKit.getCollection(TABLE).findOne(new BasicDBObject("id", user.id));
 			if(object!=null){
 				Map<String, Object> filter = Maps.newHashMap();

@@ -3,14 +3,17 @@ package cc.dorado.spence.crawler.sinaweibo;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Test;
 
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
+import us.codecraft.webmagic.scheduler.RedisScheduler;
 import cc.dorado.spence.config.Context;
 import cc.dorado.spence.entity.SinaWeiboUser;
 import cc.dorado.spence.pipeline.SinaWeiboUserPipeline;
+import cc.dorado.spence.util.SpiderLog;
 
 import com.google.common.collect.Sets;
 import com.jfinal.ext.plugin.monogodb.MongoKit;
@@ -35,8 +38,7 @@ import com.mongodb.DBObject;
  */
 public class GrabUser implements PageProcessor{
 	
-	
-	private Site site = Site.me().setRetryTimes(3).setSleepTime(10000).setUserAgent("spider");
+	private Site site = Site.me().setRetryTimes(1).setSleepTime(10000).setUserAgent("spider");
 	
 	@Override
 	public void process(Page page) {
@@ -44,48 +46,43 @@ public class GrabUser implements PageProcessor{
 		String url = page.getRequest().getUrl();
 		String id = StringUtils.substring(url, url.lastIndexOf("/")+1);
 		user.id = Long.parseLong(id);
-		//page.putField("nick", page.getHtml().xpath("//h1[@class='username']/text()"));
 		user.nick = page.getHtml().xpath("//h1[@class='username']/text()").get();
 		if(StringUtils.isEmpty(user.nick)){
 			page.setSkip(true);
-		}
-		String sexStr = page.getHtml().regex("<i class=\"W_icon icon_pf_f*e*male\">").toString();
-		String gender = "U";
-		if(sexStr!=null){
-			if(sexStr.equals("<i class=\"W_icon icon_pf_male\">")){
-				gender = "M";
-			}else if(sexStr.equals("<i class=\"W_icon icon_pf_female\">")){
-				gender = "F";
+		}else{
+			String sexStr = page.getHtml().regex("<i class=\"W_icon icon_pf_f*e*male\">").toString();
+			String gender = "U";
+			if(sexStr!=null){
+				if(sexStr.equals("<i class=\"W_icon icon_pf_male\">")){
+					gender = "M";
+				}else if(sexStr.equals("<i class=\"W_icon icon_pf_female\">")){
+					gender = "F";
+				}
 			}
-		}
-		//page.putField("gender", gender);	
-		user.gender = gender;
-		String levelStr = page.getHtml().regex("<span>Lv\\.\\d\\d*</span>").toString();
-			int level = 0;
-		if(levelStr!=null){
-			level = Integer.parseInt(levelStr.substring(levelStr.indexOf(".")+1, levelStr.lastIndexOf("<")));
-		}
-		
-		//page.putField("level", level);
-		user.level = level;
-		String verifyStr = page.getHtml().regex("class=\"W_icon icon_verify_c*o*_*v\"").toString();
-		int verify = 0;
-		if(verifyStr!=null){
-			if(verifyStr.equals("class=\"W_icon icon_verify_v\"")){
-				verify = 1;
-			}else if(verifyStr.equals("class=\"W_icon icon_verify_co_v\"")){
-				verify = 2;
+			user.gender = gender;
+			String levelStr = page.getHtml().regex("<span>Lv\\.\\d\\d*</span>").toString();
+				int level = 0;
+			if(levelStr!=null){
+				level = Integer.parseInt(levelStr.substring(levelStr.indexOf(".")+1, levelStr.lastIndexOf("<")));
 			}
 			
+			user.level = level;
+			String verifyStr = page.getHtml().regex("class=\"W_icon icon_verify_c*o*_*v\"").toString();
+			int verify = 0;
+			if(verifyStr!=null){
+				if(verifyStr.equals("class=\"W_icon icon_verify_v\"")){
+					verify = 1;
+				}else if(verifyStr.equals("class=\"W_icon icon_verify_co_v\"")){
+					verify = 2;
+				}
+				
+			}
+			user.verify = verify;
+			user.followCount = Integer.parseInt(page.getHtml().xpath("//div[@class='WB_innerwrap']/table/tbody/tr/td[1]//strong/text()").get());
+			user.followersCount = Integer.parseInt(page.getHtml().xpath("//div[@class='WB_innerwrap']/table/tbody/tr/td[2]//strong/text()").get());
+			user.weiboCount = Integer.parseInt(page.getHtml().xpath("//div[@class='WB_innerwrap']/table/tbody/tr/td[3]//strong/text()").get());
 		}
-		//page.putField("verify", verify);
-		user.verify = verify;
-		//page.putField("followCount", page.getHtml().xpath("//div[@class='WB_innerwrap']/table/tbody/tr/td[1]//strong/text()"));
-		user.followCount = Integer.parseInt(page.getHtml().xpath("//div[@class='WB_innerwrap']/table/tbody/tr/td[1]//strong/text()").get());
-		//page.putField("followersCount", page.getHtml().xpath("//div[@class='WB_innerwrap']/table/tbody/tr/td[2]//strong/text()"));
-		user.followersCount = Integer.parseInt(page.getHtml().xpath("//div[@class='WB_innerwrap']/table/tbody/tr/td[2]//strong/text()").get());
-		//page.putField("weibo", page.getHtml().xpath("//div[@class='WB_innerwrap']/table/tbody/tr/td[3]//strong/text()"));
-		user.weiboCount = Integer.parseInt(page.getHtml().xpath("//div[@class='WB_innerwrap']/table/tbody/tr/td[3]//strong/text()").get());
+		
 		page.putField("user", user);
 		
 		if(!page.getResultItems().isSkip()){
@@ -96,12 +93,15 @@ public class GrabUser implements PageProcessor{
 			for(String s:idSet){
 				boolean inSchedure = page.getTargetRequests().contains("http://weibo.com/"+s);
 				if(inSchedure){
+					SpiderLog.log(getClass()).info("id为"+s+"的账号已经在队列中。");
 					continue;
 				}
-				boolean hasGrab = hasGrab(s);
+				boolean hasGrab = hasGrab(Long.parseLong(s));
 				if(hasGrab){
+					SpiderLog.log(getClass()).info("id为"+s+"的账号已经被抓取。");
 					continue;
 				}
+				SpiderLog.log(getClass()).info("id为"+s+"的账号放入队列中。");
 				page.addTargetRequest("http://weibo.com/"+s);
 			}
 		}
@@ -126,14 +126,17 @@ public class GrabUser implements PageProcessor{
 	 * @param id
 	 * @return
 	 */
-	private boolean hasGrab(String id){
+	private boolean hasGrab(Long id){
 		MongodbPlugin mongodbPlugin = new MongodbPlugin(Context.DATABASE);
 		mongodbPlugin.start();
+
 		DBObject object = MongoKit.getCollection(SinaWeiboUserPipeline.TABLE).findOne(new BasicDBObject("id", id));
 		mongodbPlugin.stop();
 		if(object!=null){
+			SpiderLog.log(getClass()).info("id为"+id+"的账号已经被抓取。");
 			return true;
 		}
+		SpiderLog.log(getClass()).info("id为"+id+"的账号未被抓取。");
 		return false;
 	}
 
@@ -155,9 +158,20 @@ public class GrabUser implements PageProcessor{
 	}
 	
 	
-	public static void main(String[] args) {	
+	public static void main(String[] args) {	 
 		GrabUser grabUser = new GrabUser();
 		String id = grabUser.getLastId();
-		Spider.create(new GrabUser()).addUrl("http://weibo.com/"+id).addPipeline(new SinaWeiboUserPipeline()).run();
+		Spider.create(new GrabUser()).addUrl("http://weibo.com/"+id).addPipeline(new SinaWeiboUserPipeline()).setScheduler(new RedisScheduler(Context.JEDIS_POOL)).thread(4).run();
 	}
+
+	@Test
+	public void testConnection(){
+		MongodbPlugin mongodbPlugin = new MongodbPlugin("123.56.135.143",27017,"crawler");
+		mongodbPlugin.start();
+		DBCollection dbCollection = MongoKit.getCollection(SinaWeiboUserPipeline.TABLE);
+		long count = dbCollection.getCount();
+		System.out.println(count);
+		
+	}
+
 }

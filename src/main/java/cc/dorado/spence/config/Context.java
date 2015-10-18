@@ -1,5 +1,8 @@
 package cc.dorado.spence.config;
 
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+
 /**
  * Project:crawler
  * FileName:Context.java
@@ -26,4 +29,8 @@ public class Context {
 	 */
 	public static final String DATABASE = "crawler";
 	
+	/**
+	 *JEDIS_POOL:redis连接池
+	 */
+	public static final JedisPool JEDIS_POOL = new JedisPool(new JedisPoolConfig(), Redis.host, Integer.parseInt(Redis.port), 1000, Redis.password);
 }
