@@ -1,8 +1,10 @@
 package cc.dorado.spence.crawler.sinaweibo;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
 import org.junit.Test;
 
 import us.codecraft.webmagic.Page;
@@ -11,16 +13,17 @@ import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
 import us.codecraft.webmagic.scheduler.RedisScheduler;
 import cc.dorado.spence.config.Context;
+import cc.dorado.spence.config.MongoDB;
 import cc.dorado.spence.entity.SinaWeiboUser;
 import cc.dorado.spence.pipeline.SinaWeiboUserPipeline;
 import cc.dorado.spence.util.SpiderLog;
 
 import com.google.common.collect.Sets;
-import com.jfinal.ext.plugin.monogodb.MongoKit;
-import com.jfinal.ext.plugin.monogodb.MongodbPlugin;
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 
 /**
  * Project:crawler
@@ -127,11 +130,11 @@ public class GrabUser implements PageProcessor{
 	 * @return
 	 */
 	private boolean hasGrab(Long id){
-		MongodbPlugin mongodbPlugin = new MongodbPlugin(Context.DATABASE);
-		mongodbPlugin.start();
-
-		DBObject object = MongoKit.getCollection(SinaWeiboUserPipeline.TABLE).findOne(new BasicDBObject("id", id));
-		mongodbPlugin.stop();
+		MongoClient client = new MongoClient(Context.DATABASE_ADDRESS, Arrays.asList(Context.MONGODB_CREDENTIAL));
+		MongoDatabase database = client.getDatabase(MongoDB.database);
+		MongoCollection<Document> collection = database.getCollection(MongoDB.swUserCollection);
+		Document object = collection.find(Filters.eq("id", id)).first();
+		client.close();
 		if(object!=null){
 			SpiderLog.log(getClass()).info("id为"+id+"的账号已经被抓取。");
 			return true;
@@ -145,12 +148,11 @@ public class GrabUser implements PageProcessor{
 	 * @return
 	 */
 	public String getLastId(){
-		MongodbPlugin mongodbPlugin = new MongodbPlugin(Context.DATABASE);
-		mongodbPlugin.start();
-		DBCollection dbCollection = MongoKit.getCollection(SinaWeiboUserPipeline.TABLE);	
-		DBObject orderBy = new BasicDBObject();
-		orderBy.put("_id", -1);
-		DBObject lastObject = dbCollection.find().sort(orderBy).one();
+		MongoClient client = new MongoClient(Context.DATABASE_ADDRESS, Arrays.asList(Context.MONGODB_CREDENTIAL));
+		MongoDatabase database = client.getDatabase(MongoDB.database);
+		MongoCollection<Document> collection = database.getCollection(MongoDB.swUserCollection);
+		Document lastObject = collection.find().sort(Sorts.descending("_id")).first();
+		client.close();
 		if(lastObject==null){
 			return "1191955811";
 		}
@@ -163,15 +165,13 @@ public class GrabUser implements PageProcessor{
 		String id = grabUser.getLastId();
 		Spider.create(new GrabUser()).addUrl("http://weibo.com/"+id).addPipeline(new SinaWeiboUserPipeline()).setScheduler(new RedisScheduler(Context.JEDIS_POOL)).thread(4).run();
 	}
-
+	
 	@Test
-	public void testConnection(){
-		MongodbPlugin mongodbPlugin = new MongodbPlugin("123.56.135.143",27017,"crawler");
-		mongodbPlugin.start();
-		DBCollection dbCollection = MongoKit.getCollection(SinaWeiboUserPipeline.TABLE);
-		long count = dbCollection.getCount();
-		System.out.println(count);
+	public void testDB(){
+		String id = getLastId();
 		
+		System.out.println(id);
+		
+		System.out.println(hasGrab(Long.parseLong(id)));
 	}
-
 }
