@@ -40,7 +40,7 @@ import com.mongodb.client.model.Sorts;
  */
 public class GrabUser implements PageProcessor{
 	
-	private Site site = Site.me().setRetryTimes(1).setSleepTime(10000).setUserAgent("spider");
+	private Site site = Site.me().setRetryTimes(1).setSleepTime(1000).setUserAgent("spider");
 	
 	@Override
 	public void process(Page page) {
@@ -95,15 +95,15 @@ public class GrabUser implements PageProcessor{
 			for(String s:idSet){
 				boolean inSchedure = page.getTargetRequests().contains("http://weibo.com/"+s);
 				if(inSchedure){
-					SpiderLog.log(getClass()).info("id为"+s+"的账号已经在队列中。");
+					SpiderLog.log(getClass()).debug("id为"+s+"的账号已经在队列中。");
 					continue;
 				}
 				boolean hasGrab = hasGrab(Long.parseLong(s));
 				if(hasGrab){
-					SpiderLog.log(getClass()).info("id为"+s+"的账号已经被抓取。");
+					SpiderLog.log(getClass()).debug("id为"+s+"的账号已经被抓取。");
 					continue;
 				}
-				SpiderLog.log(getClass()).info("id为"+s+"的账号放入队列中。");
+				SpiderLog.log(getClass()).debug("id为"+s+"的账号放入队列中。");
 				page.addTargetRequest("http://weibo.com/"+s);
 			}
 		}
@@ -135,10 +135,10 @@ public class GrabUser implements PageProcessor{
 		Document object = collection.find(Filters.eq("id", id)).first();
 		client.close();
 		if(object!=null){
-			SpiderLog.log(getClass()).info("id为"+id+"的账号已经被抓取。");
+			SpiderLog.log(getClass()).debug("id为"+id+"的账号已经被抓取。");
 			return true;
 		}
-		SpiderLog.log(getClass()).info("id为"+id+"的账号未被抓取。");
+		SpiderLog.log(getClass()).debug("id为"+id+"的账号未被抓取。");
 		return false;
 	}
 
@@ -162,7 +162,7 @@ public class GrabUser implements PageProcessor{
 	public static void main(String[] args) {	 
 		GrabUser grabUser = new GrabUser();
 		String id = grabUser.getLastId();
-		Spider.create(new GrabUser()).addUrl("http://weibo.com/"+id).addPipeline(new SinaWeiboUserPipeline()).setScheduler(new RedisScheduler(Context.JEDIS_POOL)).thread(4).run();
+		Spider.create(new GrabUser()).addUrl("http://weibo.com/"+id).addPipeline(new SinaWeiboUserPipeline()).setScheduler(new RedisScheduler(Context.JEDIS_POOL)).thread(3).run();
 	}
 
 }

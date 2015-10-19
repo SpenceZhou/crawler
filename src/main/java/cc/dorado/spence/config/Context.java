@@ -25,12 +25,12 @@ public class Context {
 	/**
 	 * SAVETHMLPATH:保存抓取html文件的地址
 	 */
-	public static final String SAVETHMLPATH = "../html/";
+	public static final String THML_SAVE_PATH = "../html/";
 
 	/**
 	 * JEDIS_POOL:redis连接池
 	 */
-	public static final JedisPool JEDIS_POOL = new JedisPool(new JedisPoolConfig(), Redis.host, Integer.parseInt(Redis.port), 1000, Redis.password);
+	public static final JedisPool JEDIS_POOL = new JedisPool(new JedisPoolConfig(), Redis.host, Integer.parseInt(Redis.port), 10000, Redis.password);
 
 	/**
 	 * DATABASE_ADDRESS:mongodb 数据库地址
